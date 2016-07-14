@@ -1,0 +1,16 @@
+package: github.com/treeder/operator
+import:
+- package: github.com/Sirupsen/logrus
+- package: github.com/mitchellh/goamz
+  subpackages:
+  - aws
+  - ec2
+- package: github.com/spf13/cobra
+- package: github.com/spf13/viper
+- package: golang.org/x/crypto
+  subpackages:
+  - ssh
+- package: golang.org/x/net
+  subpackages:
+  - context
+- package: gopkg.in/inconshreveable/log15.v2

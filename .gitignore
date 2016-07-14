@@ -1,3 +1,5 @@
 /operator
+/operator-alpine
 private.sh
 *.pem
+vendor/

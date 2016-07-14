@@ -35,6 +35,7 @@ The server will be tagged with app name for redeploying.
 
 TODO: add servers to a load balancer, choose instance size, maybe a yaml file?
 TODO: how to set instance type
+TODO: Add logspout and other, optional
 
 ```yml
 image: treeder/hello-sinatra
