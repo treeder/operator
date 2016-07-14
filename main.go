@@ -16,7 +16,7 @@ package main
 
 import "github.com/treeder/operator/cmd"
 
-const Version = "0.0.3"
+const Version = "0.0.4"
 
 func main() {
 	cmd.Execute()
