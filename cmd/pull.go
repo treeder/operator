@@ -15,7 +15,6 @@ import (
 )
 
 var (
-	image    string
 	username string
 	password string
 )
@@ -32,7 +31,7 @@ var pullCmd = &cobra.Command{
 		if len(args) == 0 {
 			log.Fatalln("Must have image")
 		}
-		image = args[0]
+		image := args[0]
 
 		endpoint := "unix:///var/run/docker.sock"
 		client, err := docker.NewClient(endpoint)
@@ -40,9 +39,9 @@ var pullCmd = &cobra.Command{
 			log.WithError(err).Fatalln("Error making docker client!")
 			return
 		}
-		log.Infoln("username:", username, "password:", password)
 
 		repo, tag := docker.ParseRepositoryTag(image)
+		log.Infoln("username:", username, "password:", password, "image:", image, "repo:", repo, "tag:", tag)
 
 		auth := ""
 		if username != "" {
@@ -71,7 +70,6 @@ var pullCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(pullCmd)
-	pullCmd.Flags().StringVarP(&image, "image", "i", "", "Docker hub image")
 	pullCmd.Flags().StringVarP(&username, "username", "u", "", "Docker hub username")
 	pullCmd.Flags().StringVarP(&password, "password", "p", "", "Docker hub password")
 }

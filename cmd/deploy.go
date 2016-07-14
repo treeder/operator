@@ -15,6 +15,8 @@
 package cmd
 
 import (
+	"strings"
+
 	"golang.org/x/net/context"
 
 	"github.com/Sirupsen/logrus"
@@ -23,6 +25,7 @@ import (
 )
 
 var name string
+var envVars []string
 
 // deployCmd represents the deploy command
 var deployCmd = &cobra.Command{
@@ -38,6 +41,7 @@ to quickly create a Cobra application.`,
 		ctx := context.Background()
 
 		logrus.Infoln("args: ", args)
+		logrus.Infoln("env vars: ", envVars)
 		// logrus.Infoln("", cmd.Flags)
 
 		config, err := loadConfig()
@@ -45,7 +49,15 @@ to quickly create a Cobra application.`,
 			return
 		}
 
-		commands.Deploy(ctx, config, name, args[0])
+		image := args[0]
+
+		envVarsMap := map[string]string{}
+		for _, v := range envVars {
+			sp := strings.SplitN(v, "=", 1)
+			envVarsMap[sp[0]] = sp[1]
+		}
+
+		commands.Deploy(ctx, config, name, image, envVarsMap)
 	},
 }
 
@@ -57,6 +69,8 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	deployCmd.PersistentFlags().StringVar(&name, "name", "", "Name of app.")
+
+	deployCmd.PersistentFlags().StringSliceVarP(&envVars, "env", "e", []string{}, "Environment variables.")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:

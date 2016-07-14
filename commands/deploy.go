@@ -12,7 +12,7 @@ import (
 
 const defaultInstanceType = "m4.large"
 
-func Deploy(ctx context.Context, config *Config, name, image string) ([]*ec2.Instance, error) {
+func Deploy(ctx context.Context, config *Config, name, image string, envVars map[string]string) ([]*ec2.Instance, error) {
 	ctx, l := common.LoggerWithFields(ctx, map[string]interface{}{
 		"command": "deploy",
 		"name":    name,
@@ -46,7 +46,7 @@ func Deploy(ctx context.Context, config *Config, name, image string) ([]*ec2.Ins
 		// TODO:		startMonitoringContainers(ctx, instance)
 		cmds := []string{
 			pullCmd(image, config.Docker),
-			runCmd(instance, name, image),
+			runCmd(instance, name, image, envVars),
 		}
 		err = aws.RunCommandsOnServer(ctx, config.Aws, cmds, instance)
 		if err != nil {
@@ -63,7 +63,7 @@ func Deploy(ctx context.Context, config *Config, name, image string) ([]*ec2.Ins
 				pullCmd(image, config.Docker),
 				fmt.Sprintf("docker stop %v", name),
 				fmt.Sprintf("docker rm %v", name),
-				runCmd(instance, name, image),
+				runCmd(instance, name, image, envVars),
 			}
 			// TODO: change this to docker pull, docker stop, then docker run again
 			err := aws.RunCommandsOnServer(ctx, config.Aws, cmds, instance)
@@ -82,20 +82,22 @@ func Deploy(ctx context.Context, config *Config, name, image string) ([]*ec2.Ins
 // this uses itself to use the Docker API on the remote server to pull the image.
 func pullCmd(image string, cfg *DockerConfig) string {
 	var buffer bytes.Buffer
-	buffer.WriteString(fmt.Sprintf("docker run  -v /var/run/docker.sock:/var/run/docker.sock --rm treeder/operator pull %v", image))
+	buffer.WriteString(fmt.Sprintf("docker run -v /var/run/docker.sock:/var/run/docker.sock --rm treeder/operator pull %v", image))
 	if cfg != nil {
 		buffer.WriteString(fmt.Sprintf(" -u %v -p %v", cfg.Username, cfg.Password))
 	}
 	return buffer.String()
 }
 
-func runCmd(instance *ec2.Instance, name, image string) string {
+func runCmd(instance *ec2.Instance, name, image string, envVars map[string]string) string {
 	var buffer bytes.Buffer
 	buffer.WriteString("docker run -d ")
 	buffer.WriteString(fmt.Sprintf("--name %v ", name))
 	// TODO: allow user to set set port, etc
 	buffer.WriteString("-p 80:8080 -e PORT=8080 ")
-	// TODO: add env vars
+	for k, v := range envVars {
+		buffer.WriteString(fmt.Sprintf("-e \"%v=%v\"", k, v))
+	}
 	buffer.WriteString(image)
 	return buffer.String()
 }
