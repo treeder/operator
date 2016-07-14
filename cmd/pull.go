@@ -37,8 +37,10 @@ var pullCmd = &cobra.Command{
 		endpoint := "unix:///var/run/docker.sock"
 		client, err := docker.NewClient(endpoint)
 		if err != nil {
-			log.WithError(err).Fatalln("ERror making docker client!")
+			log.WithError(err).Fatalln("Error making docker client!")
+			return
 		}
+		log.Infoln("username:", username, "password:", password)
 
 		repo, tag := docker.ParseRepositoryTag(image)
 
@@ -53,13 +55,15 @@ var pullCmd = &cobra.Command{
 			ac, err := docker.NewAuthConfigurations(read)
 			if err != nil {
 				log.WithError(err).Errorln("error with new auth config")
+				return
 			}
 			authConfig = ac.Configs["docker.io"]
 		}
 
 		err = client.PullImage(docker.PullImageOptions{Repository: repo, Tag: tag}, authConfig)
 		if err != nil {
-			log.WithError(err).Errorln("error with new auth config")
+			log.WithError(err).Errorln("error pulling image")
+			return
 		}
 
 	},

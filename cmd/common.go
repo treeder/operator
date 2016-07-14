@@ -20,7 +20,7 @@ func loadConfig() (*commands.Config, error) {
 		logrus.WithError(err).Errorln("Invalid environment variables")
 		return nil, err
 	}
-	logrus.Infof("awsconfig: %+v ", awsConfig)
+	// logrus.Infof("awsconfig: %+v ", awsConfig)
 
 	dockerConfig := &commands.DockerConfig{
 		Username: viper.GetString("DOCKER_USERNAME"),

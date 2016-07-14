@@ -37,8 +37,8 @@ type Ssh struct {
 func NewSession(host, publicKey string) (*Ssh, error) {
 	// Read: http://blog.ralch.com/tutorial/golang-ssh-connection/
 	s := &Ssh{}
-	log.Infoln("KEYFILE:", publicKey)
-	log.Infoln("host:", host)
+	// log.Infoln("KEYFILE:", publicKey)
+	// log.Infoln("host:", host)
 
 	sshConfig := &ssh.ClientConfig{
 		User: "rancher",

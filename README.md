@@ -1,6 +1,6 @@
 
 
-Env vars required:
+Create a file called `.env`, copy and paste the following into it and fill in the blanks. 
 
 ```sh
 # For deployment to EC2
@@ -14,6 +14,7 @@ AWS_SECURITY_GROUP=X
 # For private images on DockerHub:
 DOCKER_USERNAME=A
 DOCKER_PASSWORD=B
+
 # For streaming logs to a syslog service (auto installs logspout):
 SYSLOG_URL=udp://papertrail.com:1234
 ```
@@ -22,12 +23,15 @@ Commands:
 
 ```
 # Deploy your image to a new server, or if it's already on a server, it will just update
+docker run --rm -it -e ALL_OF_THE_ABOVE treeder/operator --name myapp -e X=Y IMAGE
+# Or
 ./operator deploy --name someapp -e X=Y IMAGE
 
 # Add servers to an app cluster
 ./operator deploy --add --name someapp -e X=Y IMAGE
 
 # Run an SSH command across all instances of an app
+docker run --rm -it --env-file .env treeder/operator --name myapp 'some ssh command'
 ./operator sh --name someapp 'some ssh command' 
 ```
 

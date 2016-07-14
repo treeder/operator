@@ -46,7 +46,7 @@ func Deploy(ctx context.Context, config *Config, name, image string) ([]*ec2.Ins
 		// TODO:		startMonitoringContainers(ctx, instance)
 		cmds := []string{
 			pullCmd(image, config.Docker),
-			runCmd(instance, image),
+			runCmd(instance, name, image),
 		}
 		err = aws.RunCommandsOnServer(ctx, config.Aws, cmds, instance)
 		if err != nil {
@@ -61,8 +61,9 @@ func Deploy(ctx context.Context, config *Config, name, image string) ([]*ec2.Ins
 			l.Infoln("Updating instance ", i)
 			cmds := []string{
 				pullCmd(image, config.Docker),
-				fmt.Sprintf("docker stop %v", image),
-				runCmd(instance, image),
+				fmt.Sprintf("docker stop %v", name),
+				fmt.Sprintf("docker rm %v", name),
+				runCmd(instance, name, image),
 			}
 			// TODO: change this to docker pull, docker stop, then docker run again
 			err := aws.RunCommandsOnServer(ctx, config.Aws, cmds, instance)
@@ -71,6 +72,9 @@ func Deploy(ctx context.Context, config *Config, name, image string) ([]*ec2.Ins
 				return nil, err
 			}
 		}
+	}
+	for _, instance := range instances {
+		l.Infoln(instance.DNSName)
 	}
 	return instances, err
 }
@@ -85,9 +89,10 @@ func pullCmd(image string, cfg *DockerConfig) string {
 	return buffer.String()
 }
 
-func runCmd(instance *ec2.Instance, image string) string {
+func runCmd(instance *ec2.Instance, name, image string) string {
 	var buffer bytes.Buffer
 	buffer.WriteString("docker run -d ")
+	buffer.WriteString(fmt.Sprintf("--name %v ", name))
 	// TODO: allow user to set set port, etc
 	buffer.WriteString("-p 80:8080 -e PORT=8080 ")
 	// TODO: add env vars
