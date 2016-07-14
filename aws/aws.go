@@ -191,13 +191,14 @@ func RunCommandsOnServer2(ctx context.Context, config *AwsConfig, cmds []string,
 			return fmt.Errorf("could not execute command on server: %v", err)
 		}
 	}
-
 	return nil
 }
 
 func RunCommandOnServerWithOutput(ctx context.Context, config *AwsConfig, cmd string, instance *ec2.Instance) (string, error) {
 	b := &bytes.Buffer{}
-	err := RunCommandsOnServer2(ctx, config, []string{cmd}, instance, b)
+	w := io.MultiWriter(b, os.Stdout)
+	err := RunCommandsOnServer2(ctx, config, []string{cmd}, instance, w)
+	// log.Println("BBBB:", b.String())
 	if err != nil {
 		return "", err
 	}

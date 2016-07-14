@@ -15,15 +15,12 @@ const defaultInstanceType = "m4.large"
 func Deploy(ctx context.Context, config *Config, name, image string) ([]*ec2.Instance, error) {
 	ctx, l := common.LoggerWithFields(ctx, map[string]interface{}{
 		"command": "deploy",
+		"name":    name,
 		"image":   image,
 	})
 
 	// look up instances, find all instances with tag X
-	tags := map[string]string{
-		"shortname": name,
-		"tool":      "operator",
-	}
-	instances, err := aws.GetInstances(tags)
+	instances, err := GetInstances(ctx, name)
 	if err != nil {
 		l.WithError(err).Errorln("Error getting instance info.")
 		return nil, err
@@ -31,6 +28,10 @@ func Deploy(ctx context.Context, config *Config, name, image string) ([]*ec2.Ins
 
 	if len(instances) == 0 {
 		l.Infoln("No running instances, starting new one.")
+		tags := map[string]string{
+			"shortname": name,
+			"tool":      "operator",
+		}
 		tags["Name"] = name
 		instanceType := defaultInstanceType
 		instance, err := aws.LaunchServer(ctx, config.Aws, instanceType, tags)
@@ -55,7 +56,6 @@ func Deploy(ctx context.Context, config *Config, name, image string) ([]*ec2.Ins
 		// TOOD: verify the runner container started OK and is running
 	} else {
 		l.Infoln("Instances already running, updating...")
-
 		for i, instance := range instances {
 			ctx, l = common.LoggerWithField(ctx, "instance_id", instance.InstanceId)
 			l.Infoln("Updating instance ", i)

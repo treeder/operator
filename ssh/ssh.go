@@ -101,7 +101,8 @@ func (s *Ssh) newSession(w io.Writer) (*ssh.Session, error) {
 func (s *Ssh) Run(cmd string, w io.Writer) error {
 	session, err := s.newSession(w)
 	if err != nil {
-		log.Fatal(err)
+		log.WithError(err).Errorln("Couldn't create new ssh session")
+		return err
 	}
 	defer session.Close()
 

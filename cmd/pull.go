@@ -20,13 +20,7 @@ var (
 	password string
 )
 
-func init() {
-	PullCmd.Flags().StringVarP(&image, "image", "i", "", "Docker hub image")
-	PullCmd.Flags().StringVarP(&username, "username", "u", "", "Docker hub username")
-	PullCmd.Flags().StringVarP(&password, "password", "p", "", "Docker hub password")
-}
-
-var PullCmd = &cobra.Command{
+var pullCmd = &cobra.Command{
 	Use:   "pull [host]",
 	Short: "Hugo is a very fast static site generator",
 	Long: `A Fast and Flexible Static Site Generator built with
@@ -69,4 +63,11 @@ var PullCmd = &cobra.Command{
 		}
 
 	},
+}
+
+func init() {
+	RootCmd.AddCommand(pullCmd)
+	pullCmd.Flags().StringVarP(&image, "image", "i", "", "Docker hub image")
+	pullCmd.Flags().StringVarP(&username, "username", "u", "", "Docker hub username")
+	pullCmd.Flags().StringVarP(&password, "password", "p", "", "Docker hub password")
 }

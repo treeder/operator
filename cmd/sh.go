@@ -15,12 +15,13 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/Sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/treeder/operator/commands"
+	"golang.org/x/net/context"
 )
 
-var sshCmd string
+// var sshCmd string
 
 // shCmd represents the sh command
 var shCmd = &cobra.Command{
@@ -33,8 +34,17 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("sh called")
+		ctx := context.Background()
+
+		logrus.Infoln("args: ", args)
+		// logrus.Infoln("", cmd.Flags)
+
+		config, err := loadConfig()
+		if err != nil {
+			return
+		}
+
+		commands.Shell(ctx, config, name, args[0])
 	},
 }
 
@@ -50,6 +60,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// shCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	RootCmd.PersistentFlags().StringVar(&sshCmd, "ssh", "", "runs ssh command on each")
+	shCmd.PersistentFlags().StringVar(&name, "name", "", "Name of app.")
+	// shCmd.PersistentFlags().StringVar(&sshCmd, "ssh", "", "runs ssh command on each")
 
 }
