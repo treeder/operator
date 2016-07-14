@@ -55,7 +55,18 @@ to quickly create a Cobra application.`,
 			return
 		}
 		logrus.Infof("awsconfig: %+v ", awsConfig)
-		commands.Deploy(ctx, awsConfig, name, args[0])
+
+		dockerConfig := &commands.DockerConfig{
+			Username: viper.GetString("DOCKER_USERNAME"),
+			Password: viper.GetString("DOCKER_PASSWORD"),
+		}
+		dockerConfig.Validate()
+		if err != nil {
+			logrus.WithError(err).Errorln("Invalid environment variables")
+			return
+		}
+
+		commands.Deploy(ctx, &commands.Config{Aws: awsConfig, Docker: dockerConfig}, name, args[0])
 	},
 }
 
