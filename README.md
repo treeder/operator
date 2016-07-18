@@ -3,6 +3,10 @@
 Create a file called `.env`, copy and paste the following into it and fill in the blanks. 
 
 ```sh
+# For private images on DockerHub:
+DOCKER_USERNAME=A
+DOCKER_PASSWORD=B
+
 # For deployment to EC2
 AWS_ACCESS_KEY=X
 AWS_SECRET_KEY=Y
@@ -11,10 +15,6 @@ AWS_PRIVATE_KEY= # For your private key, wrap it with double quotes and replace 
 AWS_SUBNET_ID=X
 AWS_SECURITY_GROUP=X
         
-# For private images on DockerHub:
-DOCKER_USERNAME=A
-DOCKER_PASSWORD=B
-
 # For streaming logs to a syslog service:
 SYSLOG_URL=udp://papertrail.com:1234
 ```
