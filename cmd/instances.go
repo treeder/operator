@@ -21,11 +21,9 @@ import (
 	"golang.org/x/net/context"
 )
 
-// var sshCmd string
-
-// shCmd represents the sh command
-var shCmd = &cobra.Command{
-	Use:   "sh",
+// instancesCmd represents the instances command
+var instancesCmd = &cobra.Command{
+	Use:   "instances",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -49,23 +47,12 @@ to quickly create a Cobra application.`,
 			return
 		}
 
-		commands.Shell(ctx, config, name, args[0])
+		commands.Instances(ctx, config, name)
 	},
 }
 
 func init() {
-	RootCmd.AddCommand(shCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// shCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// shCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	shCmd.PersistentFlags().StringVar(&name, "name", "", "Name of app.")
-	// shCmd.PersistentFlags().StringVar(&sshCmd, "ssh", "", "runs ssh command on each")
+	RootCmd.AddCommand(instancesCmd)
+	instancesCmd.PersistentFlags().StringVar(&name, "name", "", "Name of app.")
 
 }

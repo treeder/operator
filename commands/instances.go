@@ -1,12 +1,11 @@
 package commands
 
 import (
-	"github.com/treeder/operator/aws"
 	"github.com/treeder/operator/common"
 	"golang.org/x/net/context"
 )
 
-func Shell(ctx context.Context, config *Config, name string, sshCmd string) error {
+func Instances(ctx context.Context, config *Config, name string) error {
 	ctx, l := common.LoggerWithFields(ctx, map[string]interface{}{
 		"command": "shell",
 		"name":    name,
@@ -23,12 +22,7 @@ func Shell(ctx context.Context, config *Config, name string, sshCmd string) erro
 	}
 	for i, instance := range instances {
 		ctx, l = common.LoggerWithFields(ctx, map[string]interface{}{"instance_id": instance.InstanceId, "host": instance.DNSName})
-		output, err := aws.RunCommandOnServerWithOutput(ctx, config.Aws, sshCmd, instance)
-		if err != nil {
-			l.WithError(err).Errorln("Error running command")
-			return err
-		}
-		l.Infoln(i, " ssh executed: ", output)
+		l.Infoln(i, " instance ")
 	}
 	return nil
 }

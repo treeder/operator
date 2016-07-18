@@ -12,12 +12,18 @@ import (
 
 const defaultInstanceType = "m4.large"
 
-func Deploy(ctx context.Context, config *Config, name, image string, envVars map[string]string) ([]*ec2.Instance, error) {
+type DeployOptions struct {
+	Privileged bool
+	EnvVars    map[string]string
+}
+
+func Deploy(ctx context.Context, config *Config, name, image string, options *DeployOptions) ([]*ec2.Instance, error) {
 	ctx, l := common.LoggerWithFields(ctx, map[string]interface{}{
 		"command": "deploy",
 		"name":    name,
 		"image":   image,
 	})
+	l.Infof("deployOptions: %+v\n", options)
 
 	// look up instances, find all instances with tag X
 	instances, err := GetInstances(ctx, name)
@@ -46,7 +52,7 @@ func Deploy(ctx context.Context, config *Config, name, image string, envVars map
 		// TODO:		startMonitoringContainers(ctx, instance)
 		cmds := []string{
 			pullCmd(image, config.Docker),
-			runCmd(instance, name, image, envVars),
+			runCmd(instance, name, image, options),
 		}
 		err = aws.RunCommandsOnServer(ctx, config.Aws, cmds, instance)
 		if err != nil {
@@ -63,7 +69,7 @@ func Deploy(ctx context.Context, config *Config, name, image string, envVars map
 				pullCmd(image, config.Docker),
 				fmt.Sprintf("docker stop %v", name),
 				fmt.Sprintf("docker rm %v", name),
-				runCmd(instance, name, image, envVars),
+				runCmd(instance, name, image, options),
 			}
 			// TODO: change this to docker pull, docker stop, then docker run again
 			err := aws.RunCommandsOnServer(ctx, config.Aws, cmds, instance)
@@ -89,14 +95,17 @@ func pullCmd(image string, cfg *DockerConfig) string {
 	return buffer.String()
 }
 
-func runCmd(instance *ec2.Instance, name, image string, envVars map[string]string) string {
+func runCmd(instance *ec2.Instance, name, image string, options *DeployOptions) string {
 	var buffer bytes.Buffer
 	buffer.WriteString("docker run -d ")
 	buffer.WriteString(fmt.Sprintf("--name %v ", name))
+	if options.Privileged {
+		buffer.WriteString("--privileged ")
+	}
 	// TODO: allow user to set set port, etc
 	buffer.WriteString("-p 80:8080 -e PORT=8080 ")
-	for k, v := range envVars {
-		buffer.WriteString(fmt.Sprintf("-e \"%v=%v\"", k, v))
+	for k, v := range options.EnvVars {
+		buffer.WriteString(fmt.Sprintf("-e \"%v=%v\" ", k, v))
 	}
 	buffer.WriteString(image)
 	return buffer.String()

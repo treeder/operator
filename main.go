@@ -16,11 +16,11 @@ package main
 
 import "github.com/treeder/operator/cmd"
 
-const Version = "0.0.5"
+const Version = "0.0.6"
 
 func main() {
 	// for _, e := range os.Environ() {
-	// 	fmt.Println(e)
+	// fmt.Println(e)
 	// }
 	cmd.Execute()
 }

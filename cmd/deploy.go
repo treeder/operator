@@ -26,6 +26,7 @@ import (
 
 var name string
 var envVars []string
+var deployOptions *commands.DeployOptions
 
 // deployCmd represents the deploy command
 var deployCmd = &cobra.Command{
@@ -41,8 +42,13 @@ to quickly create a Cobra application.`,
 		ctx := context.Background()
 
 		logrus.Infoln("args: ", args)
-		logrus.Infoln("env vars: ", envVars)
+		logrus.Infoln("env vars: ", envVars, "len: ", len(envVars))
 		// logrus.Infoln("", cmd.Flags)
+
+		if name == "" {
+			logrus.Errorln("Name flag required")
+			return
+		}
 
 		config, err := loadConfig()
 		if err != nil {
@@ -51,13 +57,16 @@ to quickly create a Cobra application.`,
 
 		image := args[0]
 
+		// The env vars aren't being parsed properly, they're coming in concatenated in the first element of the slice, so this will handle both hopefully
 		envVarsMap := map[string]string{}
 		for _, v := range envVars {
-			sp := strings.SplitN(v, "=", 1)
+			logrus.Infoln(v)
+			sp := strings.SplitN(v, "=", 2)
+			logrus.Infoln(sp)
 			envVarsMap[sp[0]] = sp[1]
 		}
-
-		commands.Deploy(ctx, config, name, image, envVarsMap)
+		deployOptions.EnvVars = envVarsMap
+		commands.Deploy(ctx, config, name, image, deployOptions)
 	},
 }
 
@@ -69,11 +78,11 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	deployCmd.PersistentFlags().StringVar(&name, "name", "", "Name of app.")
-
 	deployCmd.PersistentFlags().StringSliceVarP(&envVars, "env", "e", []string{}, "Environment variables.")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// deployCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	deployOptions = &commands.DeployOptions{}
+	deployCmd.Flags().BoolVar(&deployOptions.Privileged, "privileged", false, "Run in privileged mode.")
 
 }
