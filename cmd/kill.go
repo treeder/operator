@@ -21,11 +21,9 @@ import (
 	"golang.org/x/net/context"
 )
 
-// var sshCmd string
-
-// shCmd represents the sh command
-var shCmd = &cobra.Command{
-	Use:   "sh",
+// killCmd represents the kill command
+var killCmd = &cobra.Command{
+	Use:   "kill",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -35,36 +33,27 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-
-		logrus.Infoln("args: ", args)
-		// logrus.Infoln("", cmd.Flags)
-
-		if name == "" {
-			logrus.Errorln("Name flag required")
-			return
+		logrus.Infoln("args", args)
+		if len(args) == 0 {
+			logrus.Fatalln("Must provide instance id")
 		}
+		instanceId := args[0]
 
-		config, err := loadConfig()
-		if err != nil {
-			return
-		}
-
-		commands.Shell(ctx, config, name, args[0])
+		commands.Kill(ctx, name, instanceId)
 	},
 }
 
 func init() {
-	RootCmd.AddCommand(shCmd)
+	RootCmd.AddCommand(killCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// shCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// killCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// shCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	// shCmd.PersistentFlags().StringVar(&sshCmd, "ssh", "", "runs ssh command on each")
+	// killCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 }

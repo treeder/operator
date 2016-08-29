@@ -21,7 +21,12 @@ func Instances(ctx context.Context, config *Config, name string) error {
 		return nil
 	}
 	for i, instance := range instances {
-		ctx, l = common.LoggerWithFields(ctx, map[string]interface{}{"instance_id": instance.InstanceId, "host": instance.DNSName})
+		ctx, l = common.LoggerWithFields(ctx, map[string]interface{}{
+			"instance_id": instance.InstanceId,
+			"host":        instance.DNSName,
+			"launch_time": instance.LaunchTime,
+			"type":        instance.InstanceType,
+		})
 		l.Infoln(i, " instance ")
 	}
 	return nil

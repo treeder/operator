@@ -15,8 +15,8 @@ AWS_PRIVATE_KEY= # For your private key, wrap it with double quotes and replace 
 AWS_SUBNET_ID=X
 AWS_SECURITY_GROUP=X
         
-# For streaming logs to a syslog service:
-SYSLOG_URL=udp://papertrail.com:1234
+# For streaming logs to a syslog service, if set logspout will be installed too:
+SYSLOG_URL=logs.papertrail.com:1234
 ```
 
 ## Commands:
@@ -27,6 +27,12 @@ Deploy your image to a new server, or if it's already on a server, it will just 
 
 ```
 docker run --rm -it --env-file .env treeder/operator --name myapp -e X=Y IMAGE
+```
+
+### List instances
+
+```
+docker run --rm -it --env-file .env treeder/operator --name myapp instances
 ```
 
 ### Scale out

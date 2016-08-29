@@ -79,6 +79,17 @@ func GetInstances(tags map[string]string) ([]*ec2.Instance, error) {
 	return instances, err
 }
 
+func KillServer(ctx context.Context, instanceId string) error {
+	l := common.Logger(ctx)
+	l.Infoln("terminating")
+	e, err := GetEc2()
+	if err != nil {
+		return err
+	}
+	_, err = e.TerminateInstances([]string{instanceId})
+	return err
+}
+
 // LaunchServer
 // TODO: don't take cluster id, should be more generic, maybe just pass in tags?
 func LaunchServer(ctx context.Context, config *AwsConfig, instanceType string, tags map[string]string) (*ec2.Instance, error) {

@@ -23,6 +23,7 @@ import (
 )
 
 var cfgFile string
+var name string
 
 // This represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -34,9 +35,9 @@ examples and usage of using your application. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-// Uncomment the following line if your bare application
-// has an action associated with it:
-//	Run: func(cmd *cobra.Command, args []string) { },
+	// Uncomment the following line if your bare application
+	// has an action associated with it:
+	//	Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
@@ -54,7 +55,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports Persistent Flags, which, if defined here,
 	// will be global for your application.
-
+	RootCmd.PersistentFlags().StringVar(&name, "name", "", "Name of app. Used as the name tag on servers to apply commands to.")
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.operator.yaml)")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -68,8 +69,8 @@ func initConfig() {
 	}
 
 	viper.SetConfigName(".operator") // name of config file (without extension)
-	viper.AddConfigPath("$HOME")  // adding home directory as first search path
-	viper.AutomaticEnv()          // read in environment variables that match
+	viper.AddConfigPath("$HOME")     // adding home directory as first search path
+	viper.AutomaticEnv()             // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {

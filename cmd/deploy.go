@@ -24,7 +24,6 @@ import (
 	"github.com/treeder/operator/commands"
 )
 
-var name string
 var envVars []string
 var deployOptions *commands.DeployOptions
 
@@ -77,7 +76,6 @@ func init() {
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	deployCmd.PersistentFlags().StringVar(&name, "name", "", "Name of app.")
 	deployCmd.PersistentFlags().StringSliceVarP(&envVars, "env", "e", []string{}, "Environment variables.")
 
 	// Cobra supports local flags which will only run when this command

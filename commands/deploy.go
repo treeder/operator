@@ -10,7 +10,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-const defaultInstanceType = "m4.large"
+const defaultInstanceType = "t2.small"
 
 type DeployOptions struct {
 	Privileged bool

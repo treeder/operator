@@ -5,13 +5,10 @@ This is a special command, not intended for user's use, operator uses it to pull
 package cmd
 
 import (
-	"encoding/base64"
-	"fmt"
-	"strings"
-
 	log "github.com/Sirupsen/logrus"
-	docker "github.com/fsouza/go-dockerclient"
 	"github.com/spf13/cobra"
+	"github.com/treeder/operator/commands"
+	"golang.org/x/net/context"
 )
 
 var (
@@ -21,11 +18,11 @@ var (
 
 var pullCmd = &cobra.Command{
 	Use:   "pull [host]",
-	Short: "Hugo is a very fast static site generator",
-	Long: `A Fast and Flexible Static Site Generator built with
-                love by spf13 and friends in Go.
-                Complete documentation is available at http://hugo.spf13.com`,
+	Short: "Pulls an image using docker api, NOT LIKE THE REST",
+	Long: `This one is different than the rest, it is intended for use on a remote server to pull
+	a private image using credentials. It does not work like the rest where it will apply to all servers in a set.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		ctx := context.Background()
 
 		log.Infoln("args", args)
 		if len(args) == 0 {
@@ -33,37 +30,7 @@ var pullCmd = &cobra.Command{
 		}
 		image := args[0]
 
-		endpoint := "unix:///var/run/docker.sock"
-		client, err := docker.NewClient(endpoint)
-		if err != nil {
-			log.WithError(err).Fatalln("Error making docker client!")
-			return
-		}
-
-		repo, tag := docker.ParseRepositoryTag(image)
-		log.Infoln("username:", username, "password:", password, "image:", image, "repo:", repo, "tag:", tag)
-
-		auth := ""
-		if username != "" {
-			auth = base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
-		}
-
-		authConfig := docker.AuthConfiguration{}
-		if auth != "" {
-			read := strings.NewReader(fmt.Sprintf(`{"docker.io":{"auth":"%s"}}`, auth))
-			ac, err := docker.NewAuthConfigurations(read)
-			if err != nil {
-				log.WithError(err).Errorln("error with new auth config")
-				return
-			}
-			authConfig = ac.Configs["docker.io"]
-		}
-
-		err = client.PullImage(docker.PullImageOptions{Repository: repo, Tag: tag}, authConfig)
-		if err != nil {
-			log.WithError(err).Errorln("error pulling image")
-			return
-		}
+		commands.Pull(ctx, image, username, password)
 
 	},
 }
