@@ -49,11 +49,13 @@ func Deploy(ctx context.Context, config *Config, name, image string, options *De
 		ctx, l = common.LoggerWithField(ctx, "instance_id", instance.InstanceId)
 		l.Println(instance)
 
-		// TODO:		startMonitoringContainers(ctx, instance)
-		cmds := []string{
-			pullCmd(image, config.Docker),
-			runCmd(instance, name, image, options),
+		cmds := []string{}
+		l.Println("SYSLOG_URL: ", config.Logging)
+		if config.Logging.SyslogURL != "" {
+			cmds = append(cmds, logspoutCmd(config.Logging))
 		}
+		cmds = append(cmds, pullCmd(image, config.Docker),
+			runCmd(instance, name, image, options))
 		err = aws.RunCommandsOnServer(ctx, config.Aws, cmds, instance)
 		if err != nil {
 			l.WithError(err).Errorln("Error starting container")
@@ -65,12 +67,17 @@ func Deploy(ctx context.Context, config *Config, name, image string, options *De
 		for i, instance := range instances {
 			ctx, l = common.LoggerWithField(ctx, "instance_id", instance.InstanceId)
 			l.Infoln("Updating instance ", i)
-			cmds := []string{
+			cmds := []string{}
+			// l.Println("SYSLOG_URL: ", config.Logging)
+			// if config.Logging.SyslogURL != "" {
+			// 	cmds = append(cmds, logspoutCmd(config.Logging))
+			// }
+			cmds = append(cmds,
 				pullCmd(image, config.Docker),
 				fmt.Sprintf("docker stop %v", name),
 				fmt.Sprintf("docker rm %v", name),
-				runCmd(instance, name, image, options),
-			}
+				runCmd(instance, name, image, options))
+
 			// TODO: change this to docker pull, docker stop, then docker run again
 			err := aws.RunCommandsOnServer(ctx, config.Aws, cmds, instance)
 			if err != nil {
@@ -109,4 +116,12 @@ func runCmd(instance *ec2.Instance, name, image string, options *DeployOptions) 
 	}
 	buffer.WriteString(image)
 	return buffer.String()
+}
+
+func logspoutCmd(loggingConfig *LoggingConfig) string {
+	var buffer bytes.Buffer
+	buffer.WriteString("docker run -d --name=logspout --volume=/var/run/docker.sock:/var/run/docker.sock gliderlabs/logspout syslog+udp://")
+	buffer.WriteString(loggingConfig.SyslogURL)
+	return buffer.String()
+
 }

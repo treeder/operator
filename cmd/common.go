@@ -41,5 +41,14 @@ func loadConfig() (*commands.Config, error) {
 		logrus.WithError(err).Errorln("Invalid environment variables")
 		return nil, err
 	}
-	return &commands.Config{Aws: awsConfig, Docker: dockerConfig}, nil
+
+	loggingConfig := &commands.LoggingConfig{
+		SyslogURL: viper.GetString("SYSLOG_URL"),
+	}
+
+	return &commands.Config{
+		Aws:     awsConfig,
+		Docker:  dockerConfig,
+		Logging: loggingConfig,
+	}, nil
 }

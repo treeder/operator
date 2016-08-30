@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"log"
 	"strings"
 
 	"golang.org/x/net/context"
@@ -53,6 +54,8 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			return
 		}
+		log.Printf("CONFIG %+v", config)
+		log.Printf("CONFIG.Logging %+v", config.Logging)
 
 		image := args[0]
 
