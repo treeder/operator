@@ -12,7 +12,7 @@ func GetInstances(ctx context.Context, appname string) ([]*ec2.Instance, error) 
 		"shortname": appname,
 		"tool":      "operator",
 	}
-	instances, err := aws.GetInstances(tags)
+	instances, err := aws.GetRunningInstances(tags)
 	if err != nil {
 		return nil, err
 	}

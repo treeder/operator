@@ -57,12 +57,20 @@ func GetInstanceInfo(e *ec2.EC2, instanceId string) (*ec2.Instance, error) {
 	return &instance, err
 }
 
-func GetInstances(tags map[string]string) ([]*ec2.Instance, error) {
+func GetRunningInstances(tags map[string]string) ([]*ec2.Instance, error) {
+	filter := ec2.NewFilter()
+	filter.Add("instance-state-name", "running")
+	return GetInstances(tags, filter)
+}
+
+func GetInstances(tags map[string]string, filter *ec2.Filter) ([]*ec2.Instance, error) {
 	e, err := GetEc2()
 	if err != nil {
 		return nil, err
 	}
-	filter := ec2.NewFilter()
+	if filter == nil {
+		filter = ec2.NewFilter()
+	}
 	for k, v := range tags {
 		filter.Add("tag:"+k, v)
 	}
