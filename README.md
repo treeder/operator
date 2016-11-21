@@ -1,4 +1,8 @@
+# Operator
 
+![Operator](https://tctechcrunch2011.files.wordpress.com/2015/04/matrix-operator.jpg)
+
+## Configuration
 
 Create a file called `.env`, copy and paste the following into it and fill in the blanks. 
 
