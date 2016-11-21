@@ -72,3 +72,21 @@ monitoring: logspout, etc
 ```
 
 Support Docker Compose too. 
+
+## Utility containers
+
+### Base64 Google Cloud credentials for use in .env files 
+
+```sh
+docker run --rm -v $PWD:/envs -w /envs treeder/operator:google-creds-flatten google-creds.json > creds.tmp
+```
+
+Then take the output in creds.tmp and put into your .env file. 
+
+### Convert .env files into -e params when you don't want to deal with moving around .env files
+
+eg: 
+
+```sh
+docker run --rm $(docker run --rm -v $PWD:/envs -w /envs treeder/operator:env-to-args .env) -p 8080:8080 IMAGE
+```
