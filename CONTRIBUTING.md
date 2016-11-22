@@ -2,7 +2,7 @@
 First time:
 
 ```sh
-glide install
+glide install -v
 ```
 
 ```sh

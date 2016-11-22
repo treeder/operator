@@ -5,3 +5,4 @@ private.sh
 vendor/
 .env
 creds.tmp
+*.exe

@@ -16,8 +16,6 @@ package main
 
 import "github.com/treeder/operator/cmd"
 
-const Version = "0.0.9"
-
 func main() {
 	// for _, e := range os.Environ() {
 	// fmt.Println(e)
