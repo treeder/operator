@@ -26,3 +26,6 @@ iex "$envs"
 ./hello
 ```
 
+## Building this image
+
+Run release.sh or release.ps1.
