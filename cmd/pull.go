@@ -18,9 +18,9 @@ var (
 
 var pullCmd = &cobra.Command{
 	Use:   "pull [host]",
-	Short: "Pulls an image using docker api, NOT LIKE THE REST",
+	Short: "Pulls an image using docker api, NOT LIKE THE REST.",
 	Long: `This one is different than the rest, it is intended for use on a remote server to pull
-	a private image using credentials. It does not work like the rest where it will apply to all servers in a set.`,
+	a private image using credentials. It does not work like the rest where it will apply to all servers in a set. Usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm treeder/operator pull -u USERNAME -p PASSWORD`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 
