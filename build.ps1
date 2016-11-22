@@ -21,7 +21,7 @@ function quick($args2) {
 }
 
 function build () {
-    docker run --rm -v "${pwd}":/go/src/github.com/treeder/operator -w /go/src/github.com/treeder/operator iron/go:dev go build -o operator-alpine
+    docker run --rm -v ${pwd}:/go/src/github.com/treeder/operator -w /go/src/github.com/treeder/operator iron/go:dev go build -o operator-alpine
     docker build -t ${username}/${image}:latest .
 }
 
