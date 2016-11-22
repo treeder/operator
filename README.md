@@ -94,3 +94,5 @@ eg:
 ```sh
 docker run --rm $(docker run --rm -v $PWD:/envs -w /envs treeder/operator:env-to-args .env) -p 8080:8080 IMAGE
 ```
+
+For PowerShell and bash, see [here](helpers/env-to-args). 
