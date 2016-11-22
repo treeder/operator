@@ -223,3 +223,24 @@ func RunCommandOnServerWithOutput(ctx context.Context, config *AwsConfig, cmd st
 	}
 	return b.String(), nil
 }
+
+// func SendFile(ctx context.Context, config *AwsConfig) {
+// 	l := common.Logger(ctx)
+// 	s, err := opssh.NewSession(instance.DNSName, config.PrivateKey)
+// 	if err != nil {
+// 		log.WithError(err).Errorln("could not create ssh session!")
+// 		return err
+// 	}
+// 	defer s.Close()
+
+// 	w, _ := session.StdinPipe()
+// 	defer w.Close()
+// 	content := "123456789\n"
+// 	fmt.Fprintln(w, "D0755", 0, "testdir") // mkdir
+// 	fmt.Fprintln(w, "C0644", len(content), "testfile1")
+// 	fmt.Fprint(w, content)
+// 	fmt.Fprint(w, "\x00") // transfer end with \x00
+// 	fmt.Fprintln(w, "C0644", len(content), "testfile2")
+// 	fmt.Fprint(w, content)
+// 	fmt.Fprint(w, "\x00")
+// }

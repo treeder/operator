@@ -10,7 +10,7 @@ OptionParser.new do |opt|
   opt.on('--type TYPE') { |o| options[:type] = o }
 end.parse!
 
-output = " "
+output = ""
 body.each_line do |line|
 #   print "#{line}"
   line = line.strip
