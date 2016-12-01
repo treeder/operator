@@ -19,7 +19,7 @@ AWS_PRIVATE_KEY= # For your private key, wrap it with double quotes and replace 
 AWS_SUBNET_ID=X
 AWS_SECURITY_GROUP=X
         
-# For streaming logs to a syslog service, if set logspout will be installed too:
+# For streaming logs to a syslog service, if set, logspout will be installed too:
 SYSLOG_URL=logs.papertrail.com:1234
 ```
 
@@ -41,7 +41,7 @@ docker run --rm -it --env-file .env treeder/operator --name myapp instances
 
 ### Scale out
 
-# TODO: 
+**TODO:** 
 
 Add servers to an app cluster
 
@@ -74,8 +74,6 @@ instance_type: x.large
 dns: some cloudflare info here?  keys in env vars
 monitoring: logspout, etc
 ```
-
-Support Docker Compose too. 
 
 ## Utility containers
 

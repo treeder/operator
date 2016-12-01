@@ -1,3 +1,5 @@
+// DEPRECATED
+
 package aws
 
 import (
@@ -9,12 +11,11 @@ import (
 
 	"golang.org/x/net/context"
 
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/ec2"
 	"github.com/treeder/operator/common"
 	"github.com/treeder/operator/ssh"
-	"gopkg.in/inconshreveable/log15.v2"
 )
 
 type AwsConfig struct {
@@ -35,7 +36,7 @@ func GetEc2() (*ec2.EC2, error) {
 	// auth, err := aws.GetAuth(j.Opts.AwsAccessKey, j.Opts.AwsSecretKey)
 	auth, err := aws.EnvAuth()
 	if err != nil {
-		log.WithError(err).Errorln("Error aws.GetAuth")
+		logrus.WithError(err).Errorln("Error aws.GetAuth")
 		return nil, err
 	}
 	e := ec2.New(auth, aws.USEast)
@@ -45,10 +46,10 @@ func GetEc2() (*ec2.EC2, error) {
 func GetInstanceInfo(e *ec2.EC2, instanceId string) (*ec2.Instance, error) {
 	iResp, err := e.Instances([]string{instanceId}, nil)
 	if err != nil {
-		log15.Crit("Couldn't get instance details", "error", err)
+		logrus.WithError(err).Errorln("Couldn't get instance details")
 		return nil, err
 	}
-	log15.Debug("GetInstanceInfo", "response", iResp)
+	logrus.Debug("GetInstanceInfo", "response", iResp)
 	if len(iResp.Reservations) == 0 {
 		// instance no longer there
 		return nil, fmt.Errorf("Instance not found on aws.")
@@ -120,15 +121,15 @@ func LaunchServer(ctx context.Context, config *AwsConfig, instanceType string, t
 	}
 	resp, err := e.RunInstances(&ec2Options)
 	if err != nil {
-		log.Errorln("Error running instances", "error", err, "options:", ec2Options)
+		logrus.Errorln("Error running instances", "error", err, "options:", ec2Options)
 		return nil, err
 	}
 	for _, inst := range resp.Instances {
-		log15.Info("Now running", "instance", inst.InstanceId)
+		logrus.Info("Now running", "instance", inst.InstanceId)
 	}
 	inst := resp.Instances[0]
 	l = l.WithField("instance_id", inst.InstanceId)
-	log15.Info("Make sure you terminate instances to stop the cash flow!")
+	logrus.Info("Make sure you terminate instances to stop the cash flow!")
 
 	etags := []ec2.Tag{}
 	for k, v := range tags {
@@ -167,7 +168,7 @@ L:
 }
 
 func checkIfUp(ctx context.Context, config *AwsConfig, i *ec2.Instance) bool {
-	log.Info("Checking instance status", "state", i.State, "id", i.InstanceId)
+	logrus.Info("Checking instance status", "state", i.State, "id", i.InstanceId)
 	if i.State.Name != "running" {
 		return false
 	}
@@ -177,10 +178,10 @@ func checkIfUp(ctx context.Context, config *AwsConfig, i *ec2.Instance) bool {
 	// ssh in and see if docker is alive
 	output, err := RunCommandOnServerWithOutput(ctx, config, "docker ps", i)
 	if err != nil {
-		log.WithError(err).Errorln("error excuting ssh command to check if server is up")
+		logrus.WithError(err).Errorln("error excuting ssh command to check if server is up")
 		return false
 	}
-	log.Println("output from docker ps:", output)
+	logrus.Println("output from docker ps:", output)
 
 	return true
 }
@@ -194,7 +195,7 @@ func RunCommandsOnServer(ctx context.Context, config *AwsConfig, cmds []string, 
 }
 
 func RunCommandsOnServer2(ctx context.Context, config *AwsConfig, cmds []string, instance *ec2.Instance, w io.Writer) error {
-	l := common.Logger(ctx)
+	log := common.Logger(ctx)
 	s, err := opssh.NewSession(instance.DNSName, config.PrivateKey)
 	if err != nil {
 		log.WithError(err).Errorln("could not create ssh session!")
@@ -203,10 +204,10 @@ func RunCommandsOnServer2(ctx context.Context, config *AwsConfig, cmds []string,
 	defer s.Close()
 
 	for _, cmd := range cmds {
-		l.Println("run cmd: " + cmd)
+		log.Println("run cmd: " + cmd)
 		err = s.Run(cmd, w)
 		if err != nil {
-			l.WithError(err).Errorln("Ssh command failed!", cmd)
+			log.WithError(err).Errorln("Ssh command failed!", cmd)
 			return fmt.Errorf("could not execute command on server: %v", err)
 		}
 	}
