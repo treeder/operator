@@ -24,7 +24,7 @@ func GetEc2() (*ec2.EC2, error) {
 		fmt.Println("failed to create session,", err)
 		return nil, err
 	}
-	svc := ec2.New(sess)
+	svc := ec2.New(sess, &aws.Config{Region: aws.String("us-east-1")})
 	return svc, nil
 }
 
@@ -37,7 +37,7 @@ func LaunchServer(ctx context.Context, config *awslocal.AwsConfig, instanceType 
 		return nil, err
 	}
 	imageId := "ami-812ec0ec" // Rancher
-	// ImageId:      "ami-8d6485e0", // CoreOS
+	// imageId:      "ami-8d6485e0", // CoreOS
 	ec2Options := &ec2.RunInstancesInput{
 		ImageId:      aws.String(imageId),
 		MaxCount:     aws.Int64(1), // Required
@@ -46,9 +46,9 @@ func LaunchServer(ctx context.Context, config *awslocal.AwsConfig, instanceType 
 		SubnetId:     aws.String(config.SubnetId),
 		KeyName:      aws.String(config.KeyPair),
 		// UserData:     userData,
-		SecurityGroupIds: []*string{
-			aws.String(config.SecurityGroup),
-		},
+		// SecurityGroupIds: []*string{
+		// 	aws.String(config.SecurityGroup),
+		// },
 	}
 	resp, err := e.RunInstances(ec2Options)
 	if err != nil {
