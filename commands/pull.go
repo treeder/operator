@@ -23,7 +23,7 @@ func Pull(ctx context.Context, image, username, password string) error {
 	}
 
 	repo, tag := docker.ParseRepositoryTag(image)
-	log.Infoln("username:", username, "password:", password, "image:", image, "repo:", repo, "tag:", tag)
+	log.Infoln("username:", username, "image:", image, "repo:", repo, "tag:", tag)
 
 	auth := ""
 	if username != "" {
