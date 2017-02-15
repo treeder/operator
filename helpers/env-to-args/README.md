@@ -12,7 +12,15 @@ docker run --rm $(docker run --rm -v $PWD:/envs -w /envs treeder/operator:env-to
 
 ### For Bash
 
-TODO: not implemented in this image yet, but probably similar to Powershell below
+This one exports your env vars and is used like so:
+
+
+
+```sh
+eval $( --rm -v $PWD:/envs -w /envs treeder/operator:env-to-args .env --type sh)
+# then start your program
+./hello
+```
 
 ### Powershell
 

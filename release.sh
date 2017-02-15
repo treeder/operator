@@ -6,6 +6,15 @@ service="operator"
 version_file="main.go"
 tag="latest"
 
+# ensure working dir is clean
+if [[ -z $(git status -s) ]]
+then
+  echo "tree is clean"
+else
+  echo "tree is dirty, please commit changes before running this"
+  exit
+fi
+
 docker run --rm -v "$PWD":/app treeder/bump patch
 version=`cat VERSION`
 echo "version: $version"

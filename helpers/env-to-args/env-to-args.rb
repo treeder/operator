@@ -20,6 +20,8 @@ body.each_line do |line|
   when 'ps'
     split = line.split('=', 2)
     output += " $env:#{split[0]} = \"#{split[1]}\";"
+  when 'sh'
+    output += " export #{line};"
   else
     output += " -e \"#{line}\""
   end

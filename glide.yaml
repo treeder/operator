@@ -1,6 +1,7 @@
 package: github.com/treeder/operator
 import:
 - package: github.com/Sirupsen/logrus
+  version: master
 - package: github.com/fsouza/go-dockerclient
 - package: github.com/mitchellh/goamz
   subpackages:
@@ -13,9 +14,10 @@ import:
   - ssh
 - package: golang.org/x/net
   subpackages:
-  - context
+  - context 
 - package: github.com/docker/docker
   version: master
   subpackages:
   - api
 - package: github.com/aws/aws-sdk-go
+  version: master
