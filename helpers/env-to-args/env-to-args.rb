@@ -22,6 +22,9 @@ body.each_line do |line|
     output += " $env:#{split[0]} = \"#{split[1]}\";"
   when 'sh'
     output += " export #{line};"
+  when 'sh2'
+    # this one does the basic KEY=VALUE [KEY=VALUE...]
+    output += " #{line}"
   else
     output += " -e \"#{line}\""
   end
